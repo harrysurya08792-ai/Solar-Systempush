@@ -1,0 +1,581 @@
+<!--Made  on 2025-09-24 -->
+<!--Updated on 2025-09-24_04-15-30 -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3D Solar System Explorer - Interactive Space Simulation</title>
+
+    <!-- Enhanced Meta Tags -->
+    <meta name="author" content="Hariom" />
+    <meta name="robots" content="index, follow" />
+    <meta
+      name="description"
+      content="Experience our interactive 3D Solar System built with Three.js. Explore planets, their realistic orbits, and the beauty of space with smooth controls, detailed textures, and educational information about our cosmic neighborhood."
+    />
+    <meta
+      name="keywords"
+      content="3D solar system, space exploration, planets, astronomy, Three.js, interactive visualization, sun, planets, orbits, space simulation, educational, science"
+    />
+
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="3D Solar System Explorer" />
+    <meta
+      property="og:description"
+      content="Interactive 3D Solar System simulation with realistic physics, detailed planet textures, and smooth controls. Perfect for education and space enthusiasts."
+    />
+    <meta property="og:image" content="./image/solar-system.png" />
+    <meta property="og:url" content="#" />
+    <meta property="og:type" content="website" />
+
+    <!-- Enhanced Styling -->
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        overflow: hidden;
+        margin: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: #000;
+        color: #fff;
+        cursor: default;
+      }
+
+      /* Welcome Screen */
+      #welcome-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(ellipse at center, #1a1a2e 0%, #16213e 50%, #0c0c0c 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+        transition: opacity 1s ease-in-out;
+        overflow-y: auto;
+        padding: 20px;
+      }
+
+      #welcome-screen.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .welcome-content {
+        text-align: center;
+        max-width: 900px;
+        padding: 20px;
+        z-index: 2;
+        position: relative;
+        margin: 0 auto;
+      }
+
+      .welcome-title {
+        font-size: 4rem;
+        font-weight: bold;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #f9ca24, #f0932b, #eb4d4b);
+        background-size: 400% 400%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: gradientShift 8s ease infinite;
+      }
+
+      @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+
+      .welcome-subtitle {
+        font-size: 1.5rem;
+        color: #4ecdc4;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+      }
+
+      .project-info {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2rem;
+        margin: 2rem 0;
+        border: 1px solid rgba(78, 205, 196, 0.3);
+      }
+
+      .project-info h2 {
+        color: #f9ca24;
+        font-size: 2rem;
+        margin-bottom: 1rem;
+      }
+
+      .project-info p {
+        color: #fff;
+        font-size: 1.1rem;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+      }
+
+      .features-grid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1.5rem;
+        margin: 2rem 0;
+      }
+
+      .feature {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 15px;
+        padding: 1.5rem;
+        border: 1px solid rgba(78, 205, 196, 0.2);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .feature:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(78, 205, 196, 0.3);
+      }
+
+      .feature h3 {
+        color: #4ecdc4;
+        font-size: 1.3rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .feature p {
+        color: #ccc;
+        font-size: 0.9rem;
+      }
+
+      .start-button {
+        background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+        border: none;
+        padding: 1rem 2rem;
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: white;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        animation: pulse 2s infinite;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .planet-orbit {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border: 2px solid rgba(78, 205, 196, 0.3);
+        border-radius: 50%;
+        animation: orbit 10s linear infinite;
+      }
+
+      .planet {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        background: radial-gradient(circle, #4ecdc4, #45b7d1);
+        border-radius: 50%;
+        top: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        box-shadow: 0 0 10px rgba(78, 205, 196, 0.8);
+        animation: planetGlow 2s ease-in-out infinite alternate;
+      }
+
+      @keyframes orbit {
+        from { transform: translate(-50%, -50%) rotate(0deg); }
+        to { transform: translate(-50%, -50%) rotate(360deg); }
+      }
+
+      @keyframes planetGlow {
+        from { box-shadow: 0 0 10px rgba(78, 205, 196, 0.8); }
+        to { box-shadow: 0 0 20px rgba(78, 205, 196, 1); }
+      }
+
+      .start-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(255, 107, 107, 0.6);
+      }
+
+      .start-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s;
+      }
+
+      .start-button:hover::before {
+        left: 100%;
+      }
+
+      @keyframes pulse {
+        0% { box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4); }
+        50% { box-shadow: 0 5px 25px rgba(255, 107, 107, 0.8); }
+        100% { box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4); }
+      }
+
+      .solar-system-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0.1;
+        z-index: 1;
+        pointer-events: none;
+      }
+
+      .solar-system-bg canvas {
+        width: 100% !important;
+        height: 100% !important;
+      }
+
+      /* Info Panel */
+      #info-panel {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background: rgba(0, 0, 0, 0.8);
+        padding: 15px;
+        border-radius: 10px;
+        backdrop-filter: blur(10px);
+        max-width: 300px;
+        display: none;
+        z-index: 1000;
+      }
+
+      #info-panel h3 {
+        color: #4ecdc4;
+        margin-bottom: 10px;
+      }
+
+      #info-panel p {
+        margin: 5px 0;
+        font-size: 0.9rem;
+      }
+
+      /* Controls Info */
+      #controls-info {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: rgba(0, 0, 0, 0.8);
+        padding: 15px;
+        border-radius: 10px;
+        backdrop-filter: blur(10px);
+        font-size: 0.8rem;
+        z-index: 1000;
+      }
+
+      #controls-info h4 {
+        color: #4ecdc4;
+        margin-bottom: 10px;
+      }
+
+      /* Loading Screen */
+      #loading {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+      }
+
+      .loading-content {
+        text-align: center;
+      }
+
+      .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 3px solid #333;
+        border-top: 3px solid #4ecdc4;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .welcome-title {
+          font-size: 2.5rem;
+        }
+
+        .welcome-subtitle {
+          font-size: 1.2rem;
+        }
+
+        .welcome-features {
+          grid-template-columns: 1fr;
+        }
+
+        #controls-info {
+          font-size: 0.7rem;
+          bottom: 10px;
+          right: 10px;
+        }
+      }
+
+      /* Ensure canvas is visible */
+      canvas {
+        display: block !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        z-index: 1 !important;
+        width: 100% !important;
+        height: 100% !important;
+      }
+
+      /* Speed Control Slider */
+      #speed-control {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        background: rgba(0, 0, 0, 0.8);
+        padding: 15px;
+        border-radius: 10px;
+        backdrop-filter: blur(10px);
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      #speed-control label {
+        color: #4ecdc4;
+        margin-bottom: 10px;
+        font-size: 0.9rem;
+      }
+
+      #speed-slider {
+        width: 200px;
+        height: 20px;
+        background: #333;
+        outline: none;
+        border-radius: 10px;
+        -webkit-appearance: none;
+        appearance: none;
+      }
+
+      #speed-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #4ecdc4;
+        cursor: pointer;
+      }
+
+      #speed-slider::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #4ecdc4;
+        cursor: pointer;
+        border: none;
+      }
+
+      #speed-value {
+        color: #fff;
+        font-size: 0.8rem;
+        margin-top: 5px;
+      }
+    </style>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="./image/solar-system.png" />
+
+    <!-- Libraries -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.9/dat.gui.min.js"></script>
+    <script>
+      // Ensure dat.GUI is loaded before initializing
+      if (typeof dat === 'undefined') {
+        console.error('dat.GUI library failed to load');
+      } else {
+        console.log('dat.GUI library loaded successfully');
+      }
+    </script>
+  </head>
+  <body>
+    <!-- Welcome Screen -->
+    <div id="welcome-screen" style="display: block !important; opacity: 1 !important;">
+      <div class="welcome-content">
+        <h1 class="welcome-title">3D Solar System Explorer</h1>
+        <p class="welcome-subtitle">
+          Embark on an interactive journey through our solar system. Experience realistic planetary motion,
+          detailed textures, and smooth controls as you explore the wonders of space.
+        </p>
+
+        <div class="project-info">
+          <h2>About This Project</h2>
+          <p>
+            This interactive 3D Solar System simulation is built using Three.js and modern web technologies.
+            It provides an educational and visually stunning experience for learning about our cosmic neighborhood.
+          </p>
+          <p>
+            Features include realistic physics, detailed planet information, customizable controls,
+            and beautiful graphics that bring the solar system to life right in your browser.
+          </p>
+        </div>
+
+        <div class="features-grid">
+          <div class="feature">
+            <h3>🌟 Realistic Physics</h3>
+            <p>Accurate orbital mechanics with proper scaling and timing</p>
+          </div>
+          <div class="feature">
+            <h3>🎮 Interactive Controls</h3>
+            <p>Zoom, pan, and rotate with smooth camera controls</p>
+          </div>
+          <div class="feature">
+            <h3>📚 Educational</h3>
+            <p>Learn about planets with detailed information and statistics</p>
+          </div>
+          <div class="feature">
+            <h3>🎨 Beautiful Graphics</h3>
+            <p>High-quality textures and realistic lighting effects</p>
+          </div>
+        </div>
+
+        <button class="start-button" onclick="startExploration()">
+          <div class="planet-orbit">
+            <div class="planet"></div>
+          </div>
+          Start Exploration
+        </button>
+      </div>
+    </div>
+
+    <!-- Info Panel -->
+    <div id="info-panel">
+      <h3 id="planet-name">Select a Planet</h3>
+      <p id="planet-distance">Distance from Sun: -- AU</p>
+      <p id="planet-size">Size: -- Earth radii</p>
+      <p id="planet-period">Orbital Period: -- days</p>
+      <p id="planet-gravity">Gravity: -- m/s²</p>
+      <p id="planet-distance-earth">Distance from Earth: -- AU</p>
+      <p id="planet-facts">Facts: --</p>
+    </div>
+
+    <!-- Controls Info -->
+    <div id="controls-info">
+      <h4>Controls</h4>
+      <p>🖱️ Left Click + Drag: Rotate</p>
+      <p>🖱️ Right Click + Drag: Pan</p>
+      <p>🔍 Scroll: Zoom In/Out</p>
+      <p>⚙️ GUI Panel: Adjust settings</p>
+    </div>
+
+    <!-- Speed Control Slider -->
+    <div id="speed-control">
+      <label for="speed-slider">Planet Speed</label>
+      <input type="range" id="speed-slider" min="0" max="50" step="0.1" value="1">
+      <div id="speed-value">1.0x</div>
+    </div>
+
+    <!-- Loading Screen -->
+    <div id="loading" style="display: none;">
+      <div class="loading-content">
+        <div class="loading-spinner"></div>
+        <p>Loading Solar System...</p>
+        <p style="font-size: 0.8rem; color: #888;">Please wait while we prepare your journey</p>
+      </div>
+    </div>
+
+    <!-- WebGL Error Fallback -->
+    <div id="webgl-error" class="webgl-error">
+      <h3>⚠️ WebGL Not Supported</h3>
+      <p>Your browser doesn't support WebGL, which is required for this 3D experience.</p>
+      <p>Please try updating your browser or enabling hardware acceleration.</p>
+      <p><strong>Supported browsers:</strong> Chrome, Firefox, Safari, Edge</p>
+    </div>
+
+    <!-- Main Application -->
+    <!-- Script will be loaded dynamically after button click -->
+
+    <script>
+      function startExploration() {
+        const welcomeScreen = document.getElementById('welcome-screen');
+        welcomeScreen.classList.add('hidden');
+        setTimeout(() => {
+          welcomeScreen.style.display = 'none';
+        }, 1000);
+
+        // Load the solar system script dynamically after hiding welcome screen
+        const script = document.createElement('script');
+        script.src = './solarSystem.js';
+        script.type = 'module';
+        document.head.appendChild(script);
+      }
+
+      // Show welcome screen again on refresh
+      window.addEventListener('beforeunload', () => {
+        localStorage.setItem('showWelcome', 'true');
+      });
+
+      // Check if we should show welcome screen
+      if (localStorage.getItem('showWelcome') === 'false') {
+        // Hide welcome screen if user has already seen it
+        const welcomeScreen = document.getElementById('welcome-screen');
+        welcomeScreen.style.display = 'none';
+      } else {
+        // Show welcome screen by default
+        localStorage.setItem('showWelcome', 'false');
+        // Ensure loading screen is removed when welcome screen is shown
+        const loadingScreen = document.getElementById('loading');
+        if (loadingScreen) {
+          loadingScreen.style.display = 'none';
+        }
+      }
+
+      // Listen for when the solar system is ready
+      window.addEventListener('load', () => {
+        // If welcome screen should be shown, hide loading screen
+        if (localStorage.getItem('showWelcome') !== 'false') {
+          const loadingScreen = document.getElementById('loading');
+          if (loadingScreen) {
+            loadingScreen.style.display = 'none';
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
