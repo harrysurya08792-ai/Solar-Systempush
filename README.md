@@ -2,7 +2,7 @@
 
 **Interactive 3D Solar System simulation built with Three.js** — explore planets, their realistic orbits, detailed textures, and the beauty of space directly in your browser.
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-brightgreen)](https://hariom2802.github.io/Solar-System-3D/)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-brightgreen)](https://harrysurya08792-ai.github.io/Solar-Systempush/)
 [![Three.js](https://img.shields.io/badge/Three.js-r127-000000?logo=javascript)](https://threejs.org/)
 [![License](https://img.shields.io/badge/License-Educational-blue)](LICENSE)
 
@@ -25,7 +25,7 @@ The **3D Solar System Explorer** is a web-based, interactive space simulation th
 
 Experience the project directly in your browser:
 
-👉 **[https://hariom2802.github.io/Solar-System-3D/](https://hariom2802.github.io/Solar-System-3D/)**
+👉 **[https://harrysurya08792-ai.github.io/Solar-Systempush/](https://harrysurya08792-ai.github.io/Solar-Systempush/)**
 
 See the **"Hosting a Live Demo (GitHub Pages)"** section below to deploy your own copy.
 
@@ -37,10 +37,10 @@ No build step or installation is required — this is a vanilla HTML/CSS/JS proj
 
 ```bash
 # Clone the repository
-git clone https://github.com/harrysurya08792-ai/Solar-System-3D.git
+git clone https://github.com/harrysurya08792-ai/Solar-Systempush.git
 
 # Enter the project folder
-cd Solar-System-3D
+cd Solar-Systempush
 
 # Open in your browser
 open index.html   # macOS
@@ -78,7 +78,7 @@ npx http-server
 ## 📁 Project Structure
 
 ```
-Solar-System-3D/
+Solar-Systempush/
 ├── index.html            # Main entry point and UI
 ├── solarSystem.js        # Three.js 3D simulation logic
 ├── Planet.js             # Planet class and orbital behavior
